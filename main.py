@@ -23,10 +23,10 @@ class game():
         self.clock = pygame.time.Clock()
         self.running = True
         self.dt = 0
-        self.player = player.newPlayer((1.5,1.5))
 
-        self.map = newMap('map_2.ini')
+        self.map = newMap('map_1.ini')
 
+        self.player = player.newPlayer((1.5,1.5), self.map)
         self.run()
 
     def run(self):

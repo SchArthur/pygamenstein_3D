@@ -17,6 +17,10 @@ class newMap():
         for line in self.file_content :
             self.cells.append(line.strip().split(','))
 
+    def getCells(self, x, y):
+        return int(self.cells[y][x])
+
+
     def getMiniMap(self) -> pygame.surface.Surface :
         self.map_height = len(self.cells)
         self.map_width = len(self.cells[0])
