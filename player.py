@@ -7,8 +7,8 @@ class newPlayer():
         self.pos = pygame.Vector2(pos)
         self.direction = up_angle
         self.angle = 145
-        self.speed = 10
-        self.turnspeed = 100
+        self.speed = 5
+        self.turnspeed = 75
 
     def draw(self, surface, zoom = 1):
         pygame.draw.circle(surface, 'red', self.pos * zoom, 1)
@@ -30,7 +30,6 @@ class newPlayer():
 
         self.angle = fix_angle(self.angle)
         self.direction = up_angle.rotate(self.angle)
-        print(self.pos)
 
         return quit
     
