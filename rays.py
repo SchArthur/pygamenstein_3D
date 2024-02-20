@@ -1,6 +1,7 @@
 import pygame
 import math
 import map
+import textureLoader
 
 class newRay():
     def __init__(self, pos : pygame.Vector2, angle, map : map.newMap) -> None:
@@ -8,18 +9,21 @@ class newRay():
         in_cell_y = pos.y % 1
         position_in_cell = pygame.Vector2(in_cell_x,in_cell_y)
 
+        # COORDINATES
         if angle == 0 or angle == 180 :
             # JOUEUR VERTICAL
+            self.hit_type = 'hor'
             h = 0
             ray = self.hor_check(position_in_cell, angle, h) + pos
-            while not map.hasHitWall(ray):
+            while not map.hasHitWall(ray)[0]:
                 h += 1
                 ray = self.hor_check(position_in_cell, angle, h) + pos
         elif angle == 90 or angle == 270 :
             # JOUEUR HORIZONTAL
+            self.hit_type = 'ver'
             v = 0
             ray = self.ver_check(position_in_cell, angle, v) + pos
-            while not map.hasHitWall(ray):
+            while not map.hasHitWall(ray)[0]:
                 v += 1
                 ray = self.ver_check(position_in_cell, angle, v) + pos
         else:
@@ -27,7 +31,7 @@ class newRay():
             v = 0
             v_distance = self.ver_check(position_in_cell, angle, v)
             ray_v = v_distance + pos
-            while not map.hasHitWall(ray_v):
+            while not map.hasHitWall(ray_v)[0]:
                 v += 1
                 v_distance = self.ver_check(position_in_cell, angle, v)
                 ray_v = v_distance + pos
@@ -35,17 +39,29 @@ class newRay():
             h = 0
             h_distance = self.hor_check(position_in_cell, angle, h)
             ray_h = h_distance + pos
-            while not map.hasHitWall(ray_h):
+            while not map.hasHitWall(ray_h)[0]:
                 h += 1
                 h_distance = self.hor_check(position_in_cell, angle, h)
                 ray_h = h_distance + pos
 
             if v_distance.length() < h_distance.length() :
                 ray = ray_v
+                self.hit_type = 'ver'
             else :
                 ray = ray_h
-        
+                self.hit_type = 'hor'
+
+        self.texture_type = map.hasHitWall(ray)[1] -1
         self.hit_ray_coords = ray
+
+        if self.hit_type == 'ver':
+            self.texture_coord = self.hit_ray_coords[1] % 1
+        elif self.hit_type == 'hor':
+            self.texture_coord = self.hit_ray_coords[0] % 1
+
+    def getTexture(self, texture : textureLoader.wallTexture) -> pygame.surface.Surface:
+        texture = texture.getStripe(self.texture_coord, self.texture_type, self.hit_type)
+        return texture
 
     def hor_check(self, pos_in_cell : pygame.Vector2, angle, steps = 0):
         # renvoi la coordonnées de la 'steps' ème line horizontale que croise le joueur à l'angle 'angle'

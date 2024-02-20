@@ -24,7 +24,7 @@ class newMap():
         surface.fill('white')
         for y in range(len(self.cells)):
             for x in range(len(self.cells[y])):
-                if self.cells[y][x] == '1':
+                if self.cells[y][x] != '0':
                     cell_rect = pygame.rect.Rect((x,y),(1,1))
                     pygame.draw.rect(surface, wall_color, cell_rect)
 
@@ -32,6 +32,7 @@ class newMap():
     
     def hasHitWall(self, ray_pos : pygame.Vector2) -> bool:
         isWall = False
+        walltype = 1
         max_x = len(self.cells[0])
         max_y = len(self.cells)
 
@@ -42,16 +43,24 @@ class newMap():
                 x = int(math.floor(ray_pos.x))
                 y_1 = int(ray_pos.y)
                 y_2 = y_1 - 1
-                if self.cells[y_1][x] == '1' or self.cells[y_2][x] == '1':
+                if self.cells[y_1][x] != '0' :
                     isWall = True
+                    walltype = int(self.cells[y_1][x])
+                elif self.cells[y_2][x] != '0':
+                    isWall = True
+                    walltype = int(self.cells[y_2][x])
             elif not ray_pos.y.is_integer():
                 y = int(math.floor(ray_pos.y))
                 x_1 = int(ray_pos.x)
                 x_2 = x_1 - 1
-                if self.cells[y][x_1] == '1' or self.cells[y][x_2] == '1':
+                if self.cells[y][x_1] != '0' :
                     isWall = True
+                    walltype = int(self.cells[y][x_1])
+                elif self.cells[y][x_2] != '0':
+                    isWall = True
+                    walltype = int(self.cells[y][x_2])
 
-        return isWall
+        return [isWall, walltype]
 
 
 # cells = newMap('map_1.ini')
