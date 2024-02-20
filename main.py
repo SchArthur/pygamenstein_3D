@@ -24,7 +24,7 @@ class game():
         self.running = True
         self.dt = 0
 
-        self.map = newMap('map_1.ini')
+        self.map = newMap('output.ini')
 
         self.player = player.newPlayer((1.5,1.5), self.map)
         self.run()

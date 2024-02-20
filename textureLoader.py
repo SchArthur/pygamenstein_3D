@@ -38,6 +38,14 @@ class wallTexture():
             else :
                 self.hor_textures.append(self.textures_list[i])
 
+    def getWall(self, index) -> pygame.surface:
+        wall = pygame.surface.Surface((self.wall_size,self.wall_size))
+        texture = self.hor_textures[index].load()
+        for y in range(wall.get_height()):
+            for x in range(wall.get_width()):
+                wall.set_at((x, y), texture[x, y])
+
+        return wall
 
     def getStripe(self, coords, texture_index : str, texture_type : str) -> pygame.surface:
         stripe = pygame.surface.Surface((1,self.wall_size))
