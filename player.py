@@ -1,10 +1,13 @@
 import pygame
+from map import newMap
 
 up_angle = pygame.Vector2(0,-1)
+hitbox = pygame.Vector2(0,0.1)
 
 class newPlayer():
-    def __init__(self, pos) -> None:
+    def __init__(self, pos, world : newMap) -> None:
         self.pos = pygame.Vector2(pos)
+        self.world = world
         self.direction = up_angle
         self.angle = 145
         self.speed = 5
@@ -14,13 +17,20 @@ class newPlayer():
         pygame.draw.circle(surface, 'red', self.pos * zoom, 1)
         pygame.draw.line(surface, 'blue', self.pos, self.direction * 2 + self.pos)
 
+    def Move(self, move):
+        step_coords = self.pos + move
+        if self.world.getCells(int(step_coords.x), int(step_coords.y)) == 0:
+            self.pos = step_coords
+
     def input(self, dt) -> bool:
         quit = False
         keys = pygame.key.get_pressed()
         if keys[pygame.K_z]:
-            self.pos += self.direction * dt * self.speed
+            step = self.direction * dt * self.speed
+            self.Move(step)
         elif keys[pygame.K_s]:
-            self.pos -= self.direction * dt * self.speed
+            step = self.direction * dt * self.speed
+            self.Move(-step)
         if keys[pygame.K_q]:
             self.angle -= self.turnspeed * dt
         elif keys[pygame.K_d]:

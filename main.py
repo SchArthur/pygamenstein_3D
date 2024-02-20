@@ -3,15 +3,17 @@ import player
 from map import newMap
 from rays import newRay
 import math
+from textureLoader import wallTexture
 
 # settings
-minimap_zoom = 10
+minimap_zoom = 8
 fov = 90
 fullscreen = True
 
 class game():
     def __init__(self) -> None:
         pygame.init()
+        self.wall_textures = wallTexture()
         self.screen = pygame.surface.Surface((320,200))
         if not fullscreen:
             self.windows = pygame.display.set_mode((1280, 720))
@@ -21,10 +23,10 @@ class game():
         self.clock = pygame.time.Clock()
         self.running = True
         self.dt = 0
-        self.player = player.newPlayer((1.5,1.5))
 
-        self.map = newMap('map_1.ini')
+        self.map = newMap('output.ini')
 
+        self.player = player.newPlayer((1.5,1.5), self.map)
         self.run()
 
     def run(self):
@@ -50,7 +52,8 @@ class game():
             pixel_per_row = self.screen.get_width()
             for i in range(pixel_per_row):
                 ray_angle = (i*ray_delta)-(fov/2)
-                hit_coords = newRay(self.player.pos, player.fix_angle(ray_angle + self.player.angle), self.map).hit_ray_coords
+                ray = newRay(self.player.pos, player.fix_angle(ray_angle + self.player.angle), self.map)
+                hit_coords = ray.hit_ray_coords
                 pygame.draw.line(minimap, 'pink', self.player.pos * minimap_zoom, hit_coords * minimap_zoom)
                 distance_hit = hit_coords - self.player.pos
                 distance_hit = distance_hit.length()
@@ -62,7 +65,10 @@ class game():
                     simulated_distance = distance_hit
                 wall_height = self.screen.get_height()/simulated_distance
                 wall_rect = pygame.rect.Rect(i,self.screen.get_height()/2 - wall_height/2,1,wall_height)
-                pygame.draw.rect(self.screen, 'blue', wall_rect)
+                # pygame.draw.rect(self.screen, 'blue', wall_rect)
+                texture = ray.getTexture(self.wall_textures)
+                texture = pygame.transform.scale(texture, wall_rect.size)
+                self.screen.blit(texture, wall_rect)
 
             projection = pygame.transform.scale(self.screen, (self.windows.get_width(), self.windows.get_height()))
             self.windows.blit(projection, (0,0))
