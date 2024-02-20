@@ -6,7 +6,7 @@ import math
 
 # settings
 minimap_zoom = 10
-fov = 120
+fov = 90
 fullscreen = True
 
 class game():
@@ -48,15 +48,19 @@ class game():
 
             ray_delta = fov/self.screen.get_width()
             pixel_per_row = self.screen.get_width()
-            print(pixel_per_row)
             for i in range(pixel_per_row):
-                ray_angle = self.player.angle + (i*ray_delta)-(fov/2)
-                hit_coords = newRay(self.player.pos, player.fix_angle(ray_angle), self.map).hit_ray_coords
+                ray_angle = (i*ray_delta)-(fov/2)
+                hit_coords = newRay(self.player.pos, player.fix_angle(ray_angle + self.player.angle), self.map).hit_ray_coords
                 pygame.draw.line(minimap, 'pink', self.player.pos * minimap_zoom, hit_coords * minimap_zoom)
                 distance_hit = hit_coords - self.player.pos
                 distance_hit = distance_hit.length()
-                # simulated_distance = distance_hit * math.cos()
-                wall_height = self.screen.get_height()/distance_hit
+                if ray_angle > 0 :
+                    simulated_distance = distance_hit * math.cos(ray_angle * math.pi/180)
+                elif ray_angle < 0 :
+                    simulated_distance = distance_hit * math.cos(-ray_angle * math.pi/180)
+                else:
+                    simulated_distance = distance_hit
+                wall_height = self.screen.get_height()/simulated_distance
                 wall_rect = pygame.rect.Rect(i,self.screen.get_height()/2 - wall_height/2,1,wall_height)
                 pygame.draw.rect(self.screen, 'blue', wall_rect)
 
